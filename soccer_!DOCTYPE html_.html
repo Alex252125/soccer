@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trivia de Fútbol</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .question-container { margin-bottom: 20px; }
+        .option { display: block; padding: 10px; margin: 5px auto; width: 200px; cursor: pointer; border: 1px solid #000; }
+        .correct { background-color: green; color: white; }
+        .incorrect { background-color: red; color: white; }
+        .feedback { font-weight: bold; margin-top: 10px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <h1>Trivia de Reglas de Fútbol</h1>
+    <div id="quiz-container">
+        <div id="question" class="question-container"></div>
+        <div id="options"></div>
+        <p id="feedback" class="feedback"></p>
+        <button id="next-button" class="hidden" onclick="nextQuestion()">Siguiente</button>
+    </div>
+    <script>
+        const questions = [
+            { question: "¿Cuántos jugadores debe tener un equipo en cancha?", options: ["9", "10", "11"], answer: "11" },
+            { question: "¿Cuánto dura un partido de fútbol profesional?", options: ["90 minutos", "80 minutos", "100 minutos"], answer: "90 minutos" },
+            // Agregar más preguntas aquí
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        function loadQuestion() {
+            document.getElementById("feedback").textContent = "";
+            document.getElementById("next-button").classList.add("hidden");
+            const questionData = questions[currentQuestionIndex];
+            document.getElementById("question").textContent = questionData.question;
+            const optionsContainer = document.getElementById("options");
+            optionsContainer.innerHTML = "";
+
+            questionData.options.forEach(option => {
+                const button = document.createElement("button");
+                button.textContent = option;
+                button.classList.add("option");
+                button.onclick = () => checkAnswer(button, option, questionData.answer);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(button, selected, correct) {
+            const options = document.querySelectorAll(".option");
+            options.forEach(btn => btn.disabled = true);
+            if (selected === correct) {
+                button.classList.add("correct");
+                document.getElementById("feedback").textContent = "¡Gol!";
+                score++;
+            } else {
+                button.classList.add("incorrect");
+                document.getElementById("feedback").textContent = "Fail";
+            }
+            document.getElementById("next-button").classList.remove("hidden");
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById("quiz-container").innerHTML = `<h2>Tu puntaje: ${score} / ${questions.length}</h2>`;
+            let feedbackText = score > (questions.length / 2) ? "¡Bien hecho! Conoces las reglas." : "Necesitas practicar más las reglas del fútbol.";
+            document.getElementById("quiz-container").innerHTML += `<p>${feedbackText}</p>`;
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
